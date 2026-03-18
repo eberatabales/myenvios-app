@@ -1,23 +1,20 @@
 const express = require("express");
 const app = express();
 
+const packageRoutes = require("./routes/packageRoutes");
+
 app.use(express.json());
 
-// Ruta de prueba
+// Main test route
 app.get("/", (req, res) => {
-  res.send("MyEnvios API running 🚀");
+  res.send("MyEnvios backend is running");
 });
 
-// Registrar paquete (Fase 1)
-app.post("/package", (req, res) => {
-  const { apartmentNumber, residentName } = req.body;
+// Package routes
+app.use("/", packageRoutes);
 
-  res.json({
-    message: "Package registered successfully",
-    data: { apartmentNumber, residentName }
-  });
-});
+const PORT = 3000;
 
-app.listen(3000, () => {
-  console.log("Server running on port 3000");
+app.listen(PORT, () => {
+  console.log(`Server running on http://localhost:${PORT}`);
 });

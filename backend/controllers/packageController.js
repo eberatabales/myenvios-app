@@ -9,14 +9,59 @@ const getAllPackages = (req, res) => {
   });
 };
 
-// POST /package
+// GET /packages/:id
+const getPackageById = (req, res) => {
+  const packageId = Number(req.params.id);
+
+  const foundPackage = packages.find((item) => item.id === packageId);
+
+  if (!foundPackage) {
+    return res.status(404).json({
+      message: "Package not found",
+    });
+  }
+
+  res.status(200).json({
+    message: "Package retrieved successfully",
+    data: foundPackage,
+  });
+};
+
+// PATCH /packages/:id/status
+const updatePackageStatus = (req, res) => {
+  const packageId = Number(req.params.id);
+  const { status } = req.body;
+
+  const foundPackage = packages.find((item) => item.id === packageId);
+
+  if (!foundPackage) {
+    return res.status(404).json({
+      message: "Package not found",
+    });
+  }
+
+  if (!status) {
+    return res.status(400).json({
+      message: "Status is required",
+    });
+  }
+
+  foundPackage.status = status;
+
+  res.status(200).json({
+    message: "Package status updated successfully",
+    data: foundPackage,
+  });
+};
+
+// POST /packages
 const createPackage = (req, res) => {
-  const { apartmentNumber, residentName, packageDescription } = req.body;
+  const { apartmentNumber, residentName, packageDescription, carrierName } = req.body;
 
   // Basic validation
-  if (!apartmentNumber || !residentName || !packageDescription) {
+  if (!apartmentNumber || !residentName || !packageDescription || !carrierName) {
     return res.status(400).json({
-      message: "All fields are required: apartmentNumber, residentName, packageDescription",
+      message: "All fields are required: apartmentNumber, residentName, packageDescription, carrierName",
     });
   }
 
@@ -25,7 +70,9 @@ const createPackage = (req, res) => {
     apartmentNumber,
     residentName,
     packageDescription,
+    carrierName,
     status: "pending",
+    notificationStatus: "pending",
     createdAt: new Date().toISOString(),
   };
 
@@ -33,7 +80,7 @@ const createPackage = (req, res) => {
 
   // Simulated notification
   console.log(
-    `Notification: Package for apartment ${apartmentNumber} (${residentName}) was registered successfully.`
+    `Notification: Package from ${carrierName} for apartment ${apartmentNumber} (${residentName}) was registered successfully.`
   );
 
   res.status(201).json({
@@ -44,5 +91,7 @@ const createPackage = (req, res) => {
 
 module.exports = {
   getAllPackages,
+  getPackageById,
+  updatePackageStatus,
   createPackage,
 };
